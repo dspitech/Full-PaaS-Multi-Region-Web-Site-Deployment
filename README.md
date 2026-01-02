@@ -5,6 +5,12 @@
 [![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Cosmos DB](https://img.shields.io/badge/Azure%20Cosmos%20DB-0078D4?style=flat&logo=microsoft-azure&logoColor=white)](https://azure.microsoft.com/services/cosmos-db)
+[![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)](https://expressjs.com)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Azure App Service](https://img.shields.io/badge/Azure%20App%20Service-0078D4?style=flat&logo=microsoft-azure&logoColor=white)](https://azure.microsoft.com/services/app-service)
+[![Traffic Manager](https://img.shields.io/badge/Azure%20Traffic%20Manager-0078D4?style=flat&logo=microsoft-azure&logoColor=white)](https://azure.microsoft.com/services/traffic-manager)
+[![PowerShell](https://img.shields.io/badge/PowerShell-5391FE?style=flat&logo=powershell&logoColor=white)](https://docs.microsoft.com/powershell)
 
 > Application web professionnelle de gestion des étudiants déployée sur Azure avec architecture multi-régions haute disponibilité.
 
@@ -17,8 +23,11 @@
 - [Prérequis](#prérequis)
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Déploiement](#déploiement)
+- [Démarrage local](#démarrage-local)
+- [Déploiement Azure](#déploiement-azure)
 - [Documentation](#documentation)
+- [Sécurité](#sécurité)
+- [Monitoring](#monitoring-et-logs)
 - [Support](#support)
 
 ## 🎯 Vue d'ensemble
@@ -39,7 +48,7 @@
 
 L'application est déployée selon une architecture **multi-régions** avec les composants suivants :
 
-![Texte alternatif](/public/Architecture.png)
+![Architecture Azure Multi-Régions](/public/Architecture.png)
 
 ### Composants Azure
 
@@ -51,6 +60,7 @@ L'application est déployée selon une architecture **multi-régions** avec les 
 | **Azure Cosmos DB** (x2) | Base de données NoSQL | Stockage des données avec réplication géographique |
 | **Private Endpoint** | Connexion privée sécurisée | Isolation réseau pour Cosmos DB |
 | **Azure Active Directory** | Service d'identité | Authentification et autorisation |
+| **Virtual Network** | Réseau virtuel isolé | Sécurisation des connexions avec Service Endpoint |
 
 ### Flux de données
 
@@ -112,6 +122,7 @@ L'application est déployée selon une architecture **multi-régions** avec les 
 - **Azure Traffic Manager** - Distribution de trafic
 - **Azure DNS** - Résolution DNS
 - **Azure Active Directory** - Identité et accès
+- **Azure Virtual Network** - Isolation réseau
 
 ## 📦 Prérequis
 
@@ -119,10 +130,11 @@ L'application est déployée selon une architecture **multi-régions** avec les 
 - **Node.js** 18+ ([Installation](https://nodejs.org))
 - **npm** ou **yarn**
 - **Git**
+- **Compte Azure Cosmos DB** (pour les données)
 
 ### Déploiement Azure
 - **Compte Azure** actif
-- **Azure CLI** installé ([Installation](https://docs.microsoft.com/cli/azure/install-azure-cli))
+- **Azure CLI** ou **Azure PowerShell** installé
 - **Permissions** : Contributeur sur les ressources Azure
 - **Abonnement Azure** avec quotas suffisants
 
@@ -147,15 +159,13 @@ npm install
 cd ..
 ```
 
-### 3. Configuration locale
-
-Consultez [DEMARRAGE.md](./DEMARRAGE.md) pour la configuration complète du développement local.
-
 ## ⚙️ Configuration
 
 ### Variables d'environnement
 
 #### Backend (`server/.env`)
+
+Créez un fichier `.env` dans le dossier `server/` avec le contenu suivant :
 
 ```env
 # Azure Cosmos DB
@@ -171,119 +181,390 @@ NODE_ENV=development
 
 #### Frontend (optionnel)
 
+Créez un fichier `.env` à la racine du projet :
+
 ```env
 VITE_API_URL=http://localhost:4000/api
 ```
 
-### Configuration Azure
+> **Note** : En développement, le proxy Vite est configuré automatiquement dans `vite.config.ts`.
 
-Pour la configuration complète de l'infrastructure Azure, consultez :
-- [COSMOS_DB_SETUP.md](./COSMOS_DB_SETUP.md) - Configuration Cosmos DB
-- [AZURE_COSMOS_DB_TABLE.md](./AZURE_COSMOS_DB_TABLE.md) - Structure de la base de données
+### Vérification de la configuration
 
-## 🚢 Déploiement
+Utilisez le script de vérification pour valider votre configuration :
 
-### Déploiement sur Azure App Service
+```bash
+cd server
+npm run check-env
+```
 
-#### Prérequis de déploiement
+## 🏃 Démarrage local
 
-1. **Créer les ressources Azure** :
-   ```bash
-   # Créer le groupe de ressources
-   az group create --name rg-dspi-tech --location francecentral
-   
-   # Créer le compte Cosmos DB
-   az cosmosdb create \
-     --name dspi-tech-cosmos \
-     --resource-group rg-dspi-tech \
-     --default-consistency-level Session
-   ```
+### Méthode 1 : Script automatique (Recommandé)
 
-2. **Configurer Private Endpoint** (voir documentation Azure)
+#### Windows (PowerShell)
 
-3. **Créer les App Services** dans deux régions différentes
+```powershell
+.\start-dev.ps1
+```
 
-4. **Configurer Traffic Manager** pour router le trafic
+#### Linux/Mac
 
-#### Déploiement via Azure CLI
+```bash
+chmod +x start-dev.sh
+./start-dev.sh
+```
+
+### Méthode 2 : Démarrage manuel
+
+#### Terminal 1 - Backend API
+
+```bash
+cd server
+npm start
+```
+
+Vous devriez voir :
+```
+✅ Azure Cosmos DB initialisé avec succès
+🚀 Serveur API démarré sur http://127.0.0.1:4000
+```
+
+#### Terminal 2 - Frontend
+
+```bash
+npm run dev
+```
+
+Le frontend devrait démarrer sur `http://localhost:8080`
+
+### Vérification
+
+1. **Backend** : Ouvrez `http://127.0.0.1:4000/health`
+2. **Frontend** : Ouvrez `http://localhost:8080`
+
+## 🚢 Déploiement Azure
+
+### Déploiement via Azure Cloud Shell (PowerShell)
+
+Cette méthode utilise Azure Cloud Shell avec PowerShell pour créer toutes les ressources nécessaires. Les scripts sont organisés par étapes pour faciliter le déploiement.
+
+#### Étape 1 : Création du groupe de ressources et réseau virtuel
+
+```powershell
+# Variables de base
+$RG_NAME = "rg-global-node-prod"
+$LOC_FR  = "francecentral"
+$LOC_NO  = "norwayeast"
+$VNET_NAME = "vnet-cosmos-security"
+
+# Création du Groupe de Ressources
+New-AzResourceGroup -Name $RG_NAME -Location $LOC_FR -Force
+
+# Création du VNET avec Service Endpoint pour Cosmos DB
+$subnetConfig = New-AzVirtualNetworkSubnetConfig -Name "CosmosSubnet" -AddressPrefix "10.0.1.0/24" `
+                -ServiceEndpoint "Microsoft.AzureCosmosDB"
+
+$vnet = New-AzVirtualNetwork -Name $VNET_NAME -ResourceGroupName $RG_NAME -Location $LOC_NO `
+        -AddressPrefix "10.0.0.0/16" -Subnet $subnetConfig
+
+Write-Host "Étape 1 terminée : Réseau prêt." -ForegroundColor Green
+```
+
+#### Étape 2 : Création de Cosmos DB avec intégration VNET
+
+```powershell
+# Variables
+$COSMOS_NAME = "cosmos-node-db-$(Get-Random -Max 9999)"
+$DB_NAME = "StudentsDB"
+$CONTAINER_NAME = "students"
+
+Write-Host "Création du compte Cosmos DB (Serverless + VNET)..." -ForegroundColor Yellow
+
+# Création du compte Cosmos DB avec mode Serverless et intégration VNET
+$cosmosAccount = New-AzCosmosDBAccount -ResourceGroupName $RG_NAME -Name $COSMOS_NAME `
+    -Location $LOC_NO -Capabilities "EnableServerless" `
+    -VirtualNetworkRule $vnet.Subnets[0].Id `
+    -EnableVirtualNetwork:$true `
+    -EnableAutomaticFailover:$false
+
+Write-Host "Création de la base de données SQL..." -ForegroundColor Yellow
+New-AzCosmosDBSqlDatabase -ResourceGroupName $RG_NAME -AccountName $COSMOS_NAME -Name $DB_NAME
+
+Write-Host "Création du conteneur..." -ForegroundColor Yellow
+New-AzCosmosDBSqlContainer -ResourceGroupName $RG_NAME -AccountName $COSMOS_NAME `
+    -DatabaseName $DB_NAME -Name $CONTAINER_NAME -PartitionKeyPath "/id" -PartitionKeyKind "Hash"
+
+Write-Host "Étape 2 terminée avec succès !" -ForegroundColor Green
+```
+
+#### Étape 3 : Création des App Service Plans
+
+```powershell
+$ID = Get-Random -Max 9999
+$PLAN_FR_NAME = "asp-fr-$ID"
+$PLAN_NO_NAME = "asp-no-$ID"
+
+# Plan App Service France (Standard tier, Linux)
+$planFR = New-AzAppServicePlan -Name $PLAN_FR_NAME -ResourceGroupName $RG_NAME `
+    -Location $LOC_FR -Tier Standard -Linux
+
+# Plan App Service Norvège (Standard tier, Linux)
+$planNO = New-AzAppServicePlan -Name $PLAN_NO_NAME -ResourceGroupName $RG_NAME `
+    -Location $LOC_NO -Tier Standard -Linux
+
+Write-Host "Étape 3 terminée : App Service Plans créés." -ForegroundColor Green
+```
+
+#### Étape 4 : Déploiement des Web Apps (Node.js)
+
+```powershell
+$RUNTIME = "NODE|20-lts"
+$webApps = @()
+
+# Web App France
+$nameFR = "webapp-node-fr-$ID"
+$appFR = New-AzWebApp -Name $nameFR -ResourceGroupName $RG_NAME `
+    -Location $LOC_FR -AppServicePlan $PLAN_FR_NAME
+$appFR.SiteConfig.LinuxFxVersion = $RUNTIME
+$appFR.HttpsOnly = $true
+Set-AzWebApp -WebApp $appFR | Out-Null
+$webApps += $appFR
+
+# Web App Norvège
+$nameNO = "webapp-node-no-$ID"
+$appNO = New-AzWebApp -Name $nameNO -ResourceGroupName $RG_NAME `
+    -Location $LOC_NO -AppServicePlan $PLAN_NO_NAME
+$appNO.SiteConfig.LinuxFxVersion = $RUNTIME
+$appNO.HttpsOnly = $true
+Set-AzWebApp -WebApp $appNO | Out-Null
+$webApps += $appNO
+
+Write-Host "Étape 4 terminée : Web Apps déployées." -ForegroundColor Green
+```
+
+#### Étape 5 : Configuration de Traffic Manager
+
+```powershell
+$TM_NAME = "tm-node-global-$ID"
+
+# Création du profil Traffic Manager avec routage Performance
+$tmProfile = New-AzTrafficManagerProfile -Name $TM_NAME -ResourceGroupName $RG_NAME `
+    -TrafficRoutingMethod Performance -RelativeDnsName $TM_NAME `
+    -MonitorProtocol HTTPS -MonitorPort 443 -MonitorPath "/" -Ttl 30
+
+# Ajout des endpoints pour chaque région
+foreach ($app in $webApps) {
+    Add-AzTrafficManagerEndpointConfig -EndpointName "ep-$($app.Location.Replace(' ',''))" `
+        -TrafficManagerProfile $tmProfile -Type AzureEndpoints `
+        -TargetResourceId $app.Id -EndpointStatus Enabled `
+        -EndpointLocation $app.Location | Out-Null
+}
+
+Set-AzTrafficManagerProfile -TrafficManagerProfile $tmProfile | Out-Null
+
+Write-Host "=========================================================" -ForegroundColor Cyan
+Write-Host "FINI ! URL : https://$TM_NAME.trafficmanager.net" -ForegroundColor Cyan
+Write-Host "=========================================================" -ForegroundColor Cyan
+```
+
+#### Étape 6 : Configuration des variables d'environnement
+
+```powershell
+# Récupérer les clés Cosmos DB
+$cosmosKeys = Get-AzCosmosDBAccountKey -ResourceGroupName $RG_NAME -Name $COSMOS_NAME
+$cosmosEndpoint = (Get-AzCosmosDBAccount -ResourceGroupName $RG_NAME -Name $COSMOS_NAME).DocumentEndpoint
+
+# Configuration Web App France
+$appSettingsFR = @{
+    COSMOS_ENDPOINT = $cosmosEndpoint
+    COSMOS_KEY = $cosmosKeys.PrimaryMasterKey
+    COSMOS_DATABASE_ID = "StudentsDB"
+    COSMOS_CONTAINER_ID = "students"
+    NODE_ENV = "production"
+}
+Set-AzWebApp -ResourceGroupName $RG_NAME -Name $nameFR -AppSettings $appSettingsFR
+
+# Configuration Web App Norvège
+$appSettingsNO = @{
+    COSMOS_ENDPOINT = $cosmosEndpoint
+    COSMOS_KEY = $cosmosKeys.PrimaryMasterKey
+    COSMOS_DATABASE_ID = "StudentsDB"
+    COSMOS_CONTAINER_ID = "students"
+    NODE_ENV = "production"
+}
+Set-AzWebApp -ResourceGroupName $RG_NAME -Name $nameNO -AppSettings $appSettingsNO
+
+Write-Host "Variables d'environnement configurées avec succès !" -ForegroundColor Green
+```
+
+#### Étape 7 : Configuration du déploiement continu depuis GitHub
+
+Configurez le déploiement automatique depuis votre repository GitHub vers les deux App Services.
+
+##### Via PowerShell (Cloud Shell)
+
+```powershell
+# Variables GitHub
+$GITHUB_REPO = "votre-username/votre-repo"  # Format: owner/repository
+$GITHUB_BRANCH = "main"  # ou "master"
+$GITHUB_TOKEN = "votre-token-github"  # Token avec permissions repo
+
+# Configuration pour Web App France
+$sourceControlFR = @{
+    RepoUrl = "https://github.com/$GITHUB_REPO"
+    Branch = $GITHUB_BRANCH
+    ManualIntegration = $false
+}
+Set-AzWebAppSourceControl -ResourceGroupName $RG_NAME -Name $nameFR `
+    -RepoUrl $sourceControlFR.RepoUrl -Branch $sourceControlFR.Branch `
+    -ManualIntegration $sourceControlFR.ManualIntegration
+
+# Configuration pour Web App Norvège
+$sourceControlNO = @{
+    RepoUrl = "https://github.com/$GITHUB_REPO"
+    Branch = $GITHUB_BRANCH
+    ManualIntegration = $false
+}
+Set-AzWebAppSourceControl -ResourceGroupName $RG_NAME -Name $nameNO `
+    -RepoUrl $sourceControlNO.RepoUrl -Branch $sourceControlNO.Branch `
+    -ManualIntegration $sourceControlNO.ManualIntegration
+
+Write-Host "Déploiement continu configuré depuis GitHub !" -ForegroundColor Green
+```
+
+##### Via Azure CLI
+
+```bash
+# Configuration pour Web App France
+az webapp deployment source config \
+  --name $nameFR \
+  --resource-group $RG_NAME \
+  --repo-url https://github.com/$GITHUB_REPO \
+  --branch $GITHUB_BRANCH \
+  --manual-integration false
+
+# Configuration pour Web App Norvège
+az webapp deployment source config \
+  --name $nameNO \
+  --resource-group $RG_NAME \
+  --repo-url https://github.com/$GITHUB_REPO \
+  --branch $GITHUB_BRANCH \
+  --manual-integration false
+```
+
+##### Via le Portail Azure
+
+1. Accédez à votre **App Service** (France ou Norvège)
+2. Dans le menu de gauche, allez dans **Déploiement** → **Centre de déploiement**
+3. Sélectionnez **GitHub** comme source
+4. Autorisez Azure à accéder à votre compte GitHub
+5. Sélectionnez :
+   - **Organisation** : Votre organisation GitHub
+   - **Repository** : Votre repository
+   - **Branche** : `main` ou `master`
+6. Cliquez sur **Enregistrer**
+7. Répétez pour la deuxième App Service
+
+##### Configuration du build automatique
+
+Pour un build automatique du frontend, créez un fichier `.github/workflows/azure-deploy.yml` :
+
+```yaml
+name: Deploy to Azure App Service
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: |
+          npm install
+          cd server && npm install && cd ..
+      
+      - name: Build frontend
+        run: npm run build
+      
+      - name: Deploy to Azure App Service (France)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME_FR }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FR }}
+          package: ./dist
+      
+      - name: Deploy to Azure App Service (Norway)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME_NO }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_NO }}
+          package: ./dist
+```
+
+> **Note** : Pour utiliser GitHub Actions, vous devez configurer les secrets suivants dans votre repository GitHub :
+> - `AZURE_WEBAPP_NAME_FR` : Nom de l'App Service France
+> - `AZURE_WEBAPP_PUBLISH_PROFILE_FR` : Profil de publication France
+> - `AZURE_WEBAPP_NAME_NO` : Nom de l'App Service Norvège
+> - `AZURE_WEBAPP_PUBLISH_PROFILE_NO` : Profil de publication Norvège
+
+#### Étape 8 : Déploiement manuel (Alternative)
+
+Si vous préférez un déploiement manuel sans intégration GitHub :
 
 ```bash
 # Build du frontend
 npm run build
 
-# Déploiement App Service Région 1
+# Déploiement via Azure CLI
 az webapp deploy \
-  --resource-group rg-dspi-tech \
-  --name app-dspi-tech-region1 \
-  --src-path ./dist
+  --resource-group $RG_NAME \
+  --name $nameFR \
+  --src-path ./dist \
+  --type static
 
-# Déploiement App Service Région 2
 az webapp deploy \
-  --resource-group rg-dspi-tech \
-  --name app-dspi-tech-region2 \
-  --src-path ./dist
+  --resource-group $RG_NAME \
+  --name $nameNO \
+  --src-path ./dist \
+  --type static
 ```
 
-#### Configuration des variables d'environnement App Service
+> **Note** : Le déploiement continu depuis GitHub est recommandé pour la production, permettant un déploiement automatique à chaque push sur la branche principale.
+
+### Déploiement via Azure CLI
+
+Alternative avec Azure CLI :
 
 ```bash
-# Région 1
-az webapp config appsettings set \
-  --resource-group rg-dspi-tech \
-  --name app-dspi-tech-region1 \
-  --settings \
-    COSMOS_ENDPOINT="<endpoint>" \
-    COSMOS_KEY="<key>" \
-    COSMOS_DATABASE_ID="StudentsDB" \
-    COSMOS_CONTAINER_ID="students"
+# Créer le groupe de ressources
+az group create --name rg-global-node-prod --location francecentral
 
-# Région 2 (identique)
-az webapp config appsettings set \
-  --resource-group rg-dspi-tech \
-  --name app-dspi-tech-region2 \
-  --settings \
-    COSMOS_ENDPOINT="<endpoint>" \
-    COSMOS_KEY="<key>" \
-    COSMOS_DATABASE_ID="StudentsDB" \
-    COSMOS_CONTAINER_ID="students"
-```
+# Créer le compte Cosmos DB
+az cosmosdb create \
+  --name cosmos-node-db \
+  --resource-group rg-global-node-prod \
+  --default-consistency-level Session
 
-### Configuration Traffic Manager
-
-```bash
-# Créer le profil Traffic Manager
-az network traffic-manager profile create \
-  --resource-group rg-dspi-tech \
-  --name tm-dspi-tech \
-  --routing-method Performance \
-  --unique-dns-name dspi-tech
-
-# Ajouter les endpoints (régions)
-az network traffic-manager endpoint create \
-  --resource-group rg-dspi-tech \
-  --profile-name tm-dspi-tech \
-  --name region1 \
-  --type azureEndpoints \
-  --target-resource-id <app-service-1-id>
-
-az network traffic-manager endpoint create \
-  --resource-group rg-dspi-tech \
-  --profile-name tm-dspi-tech \
-  --name region2 \
-  --type azureEndpoints \
-  --target-resource-id <app-service-2-id>
+# Créer les App Services (voir scripts PowerShell ci-dessus pour la configuration complète)
 ```
 
 ## 📚 Documentation
 
 ### Documentation technique
 
-- [DEMARRAGE.md](./DEMARRAGE.md) - Guide de démarrage rapide
-- [QUICK_START.md](./QUICK_START.md) - Configuration rapide Cosmos DB
-- [COSMOS_DB_SETUP.md](./COSMOS_DB_SETUP.md) - Configuration détaillée Cosmos DB
-- [AZURE_COSMOS_DB_TABLE.md](./AZURE_COSMOS_DB_TABLE.md) - Structure de la base de données
-- [server/README.md](./server/README.md) - Documentation API backend
-- [VERIFICATION_ENV.md](./VERIFICATION_ENV.md) - Vérification de la configuration
+- [server/README.md](./server/README.md) - Documentation API backend complète
+- [server/check-env.js](./server/check-env.js) - Script de vérification de la configuration
 
 ### API Documentation
 
@@ -310,6 +591,7 @@ Consultez [server/README.md](./server/README.md) pour la documentation complète
 - ✅ **Variables d'environnement** : Secrets stockés de manière sécurisée
 - ✅ **CORS** : Restrictions d'origine configurées
 - ✅ **Validation** : Validation des entrées côté serveur
+- ✅ **Service Endpoint** : Isolation réseau via VNET
 
 ### Bonnes pratiques
 
@@ -318,6 +600,7 @@ Consultez [server/README.md](./server/README.md) pour la documentation complète
 - Activer les logs d'audit Azure
 - Configurer les alertes de sécurité
 - Mettre en place un monitoring continu
+- Utiliser des Private Endpoints pour toutes les ressources sensibles
 
 ## 📊 Monitoring et Logs
 
@@ -334,6 +617,7 @@ Consultez [server/README.md](./server/README.md) pour la documentation complète
 - Utilisation des ressources
 - Latence Cosmos DB
 - Disponibilité des régions
+- Distribution du trafic via Traffic Manager
 
 ## 🤝 Support
 
@@ -341,6 +625,7 @@ Consultez [server/README.md](./server/README.md) pour la documentation complète
 
 - **Documentation Azure** : [docs.microsoft.com/azure](https://docs.microsoft.com/azure)
 - **Documentation Cosmos DB** : [docs.microsoft.com/azure/cosmos-db](https://docs.microsoft.com/azure/cosmos-db)
+- **Documentation App Service** : [docs.microsoft.com/azure/app-service](https://docs.microsoft.com/azure/app-service)
 - **Support technique** : Contactez l'équipe DevOps
 
 ### Contribution
