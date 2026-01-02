@@ -200,22 +200,7 @@ npm run check-env
 
 ## 🏃 Démarrage local
 
-### Méthode 1 : Script automatique (Recommandé)
-
-#### Windows (PowerShell)
-
-```powershell
-.\start-dev.ps1
-```
-
-#### Linux/Mac
-
-```bash
-chmod +x start-dev.sh
-./start-dev.sh
-```
-
-### Méthode 2 : Démarrage manuel
+### Méthode : Démarrage manuel
 
 #### Terminal 1 - Backend API
 
