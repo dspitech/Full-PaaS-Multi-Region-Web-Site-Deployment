@@ -228,7 +228,7 @@ Le frontend devrait démarrer sur `http://localhost:8080`
 1. **Backend** : Ouvrez `http://127.0.0.1:4000/health`
 2. **Frontend** : Ouvrez `http://localhost:8080`
 
-## 🚢 Déploiement Azure
+## 🚢 Déploiement des ressources dans Azure
 
 ### Déploiement via Azure Cloud Shell (PowerShell)
 
