@@ -434,11 +434,6 @@ Write-Host "Déploiement continu configuré depuis GitHub !" -ForegroundColor Gr
 
 ## 📚 Documentation
 
-### Documentation technique
-
-- [server/README.md](./server/README.md) - Documentation API backend complète
-- [server/check-env.js](./server/check-env.js) - Script de vérification de la configuration
-
 ### API Documentation
 
 L'API backend expose les endpoints suivants :
@@ -452,7 +447,6 @@ L'API backend expose les endpoints suivants :
 | `PUT` | `/api/students/:id` | Modifier un étudiant |
 | `DELETE` | `/api/students/:id` | Supprimer un étudiant |
 
-Consultez [server/README.md](./server/README.md) pour la documentation complète de l'API.
 
 ## 🔒 Sécurité
 
