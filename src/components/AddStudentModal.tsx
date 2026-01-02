@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StudentFormData, Student } from "@/types/student";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,29 +38,48 @@ const programs = [
 
 export function AddStudentModal({ open, onOpenChange, onSubmit, editingStudent }: AddStudentModalProps) {
   const [formData, setFormData] = useState<StudentFormData>({
-    firstName: editingStudent?.firstName || "",
-    lastName: editingStudent?.lastName || "",
-    email: editingStudent?.email || "",
-    phone: editingStudent?.phone || "",
-    program: editingStudent?.program || "",
-    year: editingStudent?.year || 1,
-    status: editingStudent?.status || "active",
-    enrollmentDate: editingStudent?.enrollmentDate || new Date().toISOString().split("T")[0],
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    program: "",
+    year: 1,
+    status: "active",
+    enrollmentDate: new Date().toISOString().split("T")[0],
   });
+
+  // Mettre à jour le formulaire quand editingStudent change
+  useEffect(() => {
+    if (editingStudent) {
+      setFormData({
+        firstName: editingStudent.firstName || "",
+        lastName: editingStudent.lastName || "",
+        email: editingStudent.email || "",
+        phone: editingStudent.phone || "",
+        program: editingStudent.program || "",
+        year: editingStudent.year || 1,
+        status: editingStudent.status || "active",
+        enrollmentDate: editingStudent.enrollmentDate || new Date().toISOString().split("T")[0],
+      });
+    } else {
+      // Réinitialiser le formulaire si on ajoute un nouvel étudiant
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        program: "",
+        year: 1,
+        status: "active",
+        enrollmentDate: new Date().toISOString().split("T")[0],
+      });
+    }
+  }, [editingStudent, open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      program: "",
-      year: 1,
-      status: "active",
-      enrollmentDate: new Date().toISOString().split("T")[0],
-    });
+    // Le formulaire sera réinitialisé par useEffect quand le modal se ferme
     onOpenChange(false);
   };
 

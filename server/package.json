@@ -1,0 +1,22 @@
+{
+  "name": "cosmos-db-api",
+  "version": "1.0.0",
+  "description": "API backend pour Azure Cosmos DB",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check-env": "node check-env.js"
+  },
+  "dependencies": {
+    "@azure/cosmos": "^4.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21"
+  }
+}
