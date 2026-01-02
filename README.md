@@ -418,26 +418,6 @@ Set-AzWebAppSourceControl -ResourceGroupName $RG_NAME -Name $nameNO `
 Write-Host "Déploiement continu configuré depuis GitHub !" -ForegroundColor Green
 ```
 
-##### Via Azure CLI
-
-```bash
-# Configuration pour Web App France
-az webapp deployment source config \
-  --name $nameFR \
-  --resource-group $RG_NAME \
-  --repo-url https://github.com/$GITHUB_REPO \
-  --branch $GITHUB_BRANCH \
-  --manual-integration false
-
-# Configuration pour Web App Norvège
-az webapp deployment source config \
-  --name $nameNO \
-  --resource-group $RG_NAME \
-  --repo-url https://github.com/$GITHUB_REPO \
-  --branch $GITHUB_BRANCH \
-  --manual-integration false
-```
-
 ##### Via le Portail Azure
 
 1. Accédez à votre **App Service** (France ou Norvège)
@@ -451,98 +431,6 @@ az webapp deployment source config \
 6. Cliquez sur **Enregistrer**
 7. Répétez pour la deuxième App Service
 
-##### Configuration du build automatique
-
-Pour un build automatique du frontend, créez un fichier `.github/workflows/azure-deploy.yml` :
-
-```yaml
-name: Deploy to Azure App Service
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-      
-      - name: Install dependencies
-        run: |
-          npm install
-          cd server && npm install && cd ..
-      
-      - name: Build frontend
-        run: npm run build
-      
-      - name: Deploy to Azure App Service (France)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME_FR }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FR }}
-          package: ./dist
-      
-      - name: Deploy to Azure App Service (Norway)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME_NO }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_NO }}
-          package: ./dist
-```
-
-> **Note** : Pour utiliser GitHub Actions, vous devez configurer les secrets suivants dans votre repository GitHub :
-> - `AZURE_WEBAPP_NAME_FR` : Nom de l'App Service France
-> - `AZURE_WEBAPP_PUBLISH_PROFILE_FR` : Profil de publication France
-> - `AZURE_WEBAPP_NAME_NO` : Nom de l'App Service Norvège
-> - `AZURE_WEBAPP_PUBLISH_PROFILE_NO` : Profil de publication Norvège
-
-#### Étape 8 : Déploiement manuel (Alternative)
-
-Si vous préférez un déploiement manuel sans intégration GitHub :
-
-```bash
-# Build du frontend
-npm run build
-
-# Déploiement via Azure CLI
-az webapp deploy \
-  --resource-group $RG_NAME \
-  --name $nameFR \
-  --src-path ./dist \
-  --type static
-
-az webapp deploy \
-  --resource-group $RG_NAME \
-  --name $nameNO \
-  --src-path ./dist \
-  --type static
-```
-
-> **Note** : Le déploiement continu depuis GitHub est recommandé pour la production, permettant un déploiement automatique à chaque push sur la branche principale.
-
-### Déploiement via Azure CLI
-
-Alternative avec Azure CLI :
-
-```bash
-# Créer le groupe de ressources
-az group create --name rg-global-node-prod --location francecentral
-
-# Créer le compte Cosmos DB
-az cosmosdb create \
-  --name cosmos-node-db \
-  --resource-group rg-global-node-prod \
-  --default-consistency-level Session
-
-# Créer les App Services (voir scripts PowerShell ci-dessus pour la configuration complète)
-```
 
 ## 📚 Documentation
 
