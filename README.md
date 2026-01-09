@@ -387,37 +387,6 @@ Write-Host "Variables d'environnement configurées avec succès !" -ForegroundCo
 
 Configurez le déploiement automatique depuis votre repository GitHub vers les deux App Services.
 
-##### Via PowerShell (Cloud Shell)
-
-```powershell
-# Variables GitHub
-$GITHUB_REPO = "votre-username/votre-repo"  # Format: owner/repository
-$GITHUB_BRANCH = "main"  # ou "master"
-$GITHUB_TOKEN = "votre-token-github"  # Token avec permissions repo
-
-# Configuration pour Web App France
-$sourceControlFR = @{
-    RepoUrl = "https://github.com/$GITHUB_REPO"
-    Branch = $GITHUB_BRANCH
-    ManualIntegration = $false
-}
-Set-AzWebAppSourceControl -ResourceGroupName $RG_NAME -Name $nameFR `
-    -RepoUrl $sourceControlFR.RepoUrl -Branch $sourceControlFR.Branch `
-    -ManualIntegration $sourceControlFR.ManualIntegration
-
-# Configuration pour Web App Norvège
-$sourceControlNO = @{
-    RepoUrl = "https://github.com/$GITHUB_REPO"
-    Branch = $GITHUB_BRANCH
-    ManualIntegration = $false
-}
-Set-AzWebAppSourceControl -ResourceGroupName $RG_NAME -Name $nameNO `
-    -RepoUrl $sourceControlNO.RepoUrl -Branch $sourceControlNO.Branch `
-    -ManualIntegration $sourceControlNO.ManualIntegration
-
-Write-Host "Déploiement continu configuré depuis GitHub !" -ForegroundColor Green
-```
-
 ##### Via le Portail Azure
 
 1. Accédez à votre **App Service** (France ou Norvège)
